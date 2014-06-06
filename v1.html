@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+	    <meta charset="utf-8">
+		<script type="text/javascript" src="./ThirdParty/jasmine-1.3.1/jasmine.js"></script>
+		<script type="text/javascript" src="./ThirdParty/requirejs-2.1.9/require.js"></script>
+		<script type="text/javascript" src="./ThirdParty/requirejs-2.1.9/r.js"></script>
+
+		
+
+		<title>Test Web Services</title>
+	</head>
+	<body>
+	
+		<div id ="title">
+			<h5>test requete</h5>		
+		</div>
+
+		<div id="res">
+			<div id="wcs">
+				<h3>wcs</h3>
+				<img id="wcsRes"/>
+			</div>
+			<div id="wcps">
+				<h3>wcps</h3>
+				<img id="wcpsRes"/>
+			</div>
+			<div id="wmts">
+				<h3>wmts</h3>
+				<img id="wmtsRes"/>
+			</div>	
+			<div id="wcts1">				
+			</div>
+			<div id="wcts2">	
+			</div>			
+		</div>
+
+
+		
+
+
+		<script type="text/javascript">
+			require([	
+			'./Source/Core/DefaultProxy',
+			'./Source/Scene/WebMapTileServiceImageryProvider', 
+			'./Source/Scene/WebCoverageServiceImageryProvider_v1_0',
+			'./Source/Scene/WebCoverageServiceImageryProvider_v1_1',
+			'./Source/Scene/WebCoverageServiceImageryProvider_v2',
+			'./Source/Scene/WebCoverageProcessingServiceImageryProvider_v2',
+			'./Source/Scene/WebCoordinateTransformationServiceImageryProvider_v1',
+			'./Source/Scene/WebCoordinateTransformationServiceImageryProvider_v2'			
+			],function(
+			DefaultProxy,
+			wmts, 
+			wcs_10,
+			wcs_11,
+			wcs_2,
+			wcps,
+			wcts_1,
+			wcts_2)
+			{
+			"use strict";
+
+
+
+
+			var img, resReq;	
+			
+			var description = {
+				url : 'http://sampleserver3.arcgisonline.com/ArcGIS/services/World/Temperature/ImageServer/WCSServer?',
+				proxy : new DefaultProxy('/proxy/'),
+				coverage : 1,
+				parameters : {
+					format : 'jpeg',
+					bbox : '-158.203125,-105.46875,158.203125,105.46875',
+					width : 500,
+					height : 500,
+					crs : 'EPSG:4326'
+				}			
+			};
+
+			var desc = JSON.stringify(description);
+			
+			///////////////////////////////////////////
+			//////////////////////////////////////
+			//
+			// avec cette version il faut modifier les fichiers .js de traitement des requêtes
+			// mettre return url; au lieu de return ImageryProvider.loadImage(this, url);	 
+			// et enlever le css pour tout ce qui se trouve pas dans le .html
+			// (si on enléve le div container, il faudra enlever le css associé)
+
+			if((desc.indexOf('coverageid') !== -1) && (desc.indexOf('query') == -1)){
+				resReq = new wcs_2(description);
+				document.getElementById('wcsRes').src = resReq.requestImage();
+			}
+			else if((desc.indexOf('coverageid') !== -1) && (desc.indexOf('query') !== -1)){
+				resReq = new wcps(description);
+				document.getElementById('wcpsRes').src = resReq.requestImage();
+			}
+			else if((desc.indexOf('identifier') !== -1)){
+				resReq = new wcs_11(description);
+				document.getElementById('wcsRes').src = resReq.requestImage();
+			}
+			else if((desc.indexOf('coverage') !== -1)){
+				resReq = new wcs_10(description);
+				document.getElementById('wcsRes').src = resReq.requestImage();
+			}
+			else if(desc.indexOf('layer') !== -1){
+				resReq = new wmts(description);
+				document.getElementById('wmtsRes').src = resReq.requestImage();
+			}
+			else if(desc.indexOf('tosrs') !== -1){
+				resReq = new wcts_1(description);
+				document.getElementById('wcts1').innerHTML = resReq.requestImage();
+			}	
+			else if(desc.indexOf('targetcrs') !== -1){
+				resReq = new wcts_2(description);
+				document.getElementById('wcts2').innerHTML = resReq.requestImage();
+			}	
+			else 
+				document.getElementById('imageRes').innerHTML = 'The version used for the request is not treated.';				
+				
+			/*			
+		//	test WCPS derniere version (bon type de requête : boucle de parcours et traitement des coverage) :
+			
+				var description = {
+					url :	'http://earthserver.pml.ac.uk/cache/wcps_cache' ,
+					coverageid : 'myocean_test' 
+				};
+				// adding the query for the treatment of the coverage returned.
+				description.query= 'for c in (' + description.coverageid + ') return encode (slice(c, { t(10)}) ,"png")';
+
+				var img = new wcps(description);
+				document.getElementById('res').innerHTML = img;
+				*/
+			
+
+		/*	var aa= ab(4,8);
+			document.getElementById('res').innerHTML=aa;*/
+			
+		/*
+				//requete wmts
+			var description = {
+					url : 'http://sampleserver6.arcgisonline.com/arcgis/rest/services/WorldTimeZones/MapServer/WMTS',
+					layer :'WorldTimeZones',
+					parameters : {
+						tilerow : 0,
+						tilecol : 0,
+						tilematrix : '1',
+						tilematrixset : 'default028mm'
+					}		
+				};
+
+				var img = new WebMapTileServiceProvider(description);
+				document.getElementById('res').innerHTML=img;
+		*/
+				
+	/*
+	/////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////				WCS
+	/////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////
+					// test WCS v2
+				var description = {
+					url : 'http://earthserver.pml.ac.uk/petascope?' ,
+					coverageid : 'ncimport' ,			
+					proxy : new DefaultProxy('/proxy/') ,
+					parameters : {
+						format : 'tiff' , 
+						subset : 'x,http://www.opengis.net/def/crs/EPSG/0/4326(-10,0)&SUBSET=y,http://www.opengis.net/def/crs/EPSG/0/4326(53,63)' 
+					}
+				};
+				
+
+			//	requête avec la version 1.1.0 de WCS
+			//
+			//		http://nsidc.org/cgi-bin/atlas_north?service=WCS&version=1.1.1&request=GetCoverage&
+			//		crs=EPSG:32661&format=GeoTIFF&resx=25000&resy=25000&bbox=-2700000,-2700000,6700000,6700000&
+			//		coverage=sea_ice_concentration_01	
+	
+				//test WCS v1.1
+				
+			var description = {
+				url : 'http://nsidc.org/cgi-bin/atlas_north',
+				proxy : new DefaultProxy('/proxy/'),
+				identifier : 'sea_ice_concentration_01',
+				parameters : {
+					boundingbox : '-2700000,-2700000,6700000,6700000,urn:ogc:def:crs:EPSG::32661',
+					format : 'GeoTIFF',
+					version : '1.1.0'
+				}
+			};
+
+			//test WCS v1.0
+				
+			//	http://sampleserver3.arcgisonline.com/ArcGIS/services/World/Temperature/ImageServer/
+			//	WCSServer?SERVICE=WCS&VERSION=1.0.0&REQUEST=GetCoverage&COVERAGE=1&
+			//	CRS=EPSG:4326&RESPONSE_CRS=EPSG:4326&BBOX=-158.203125,-105.46875,158.203125,105.46875&
+			//	WIDTH=500&HEIGHT=500&FORMAT=jpeg					
+			
+			var description = {
+				url : 'http://sampleserver3.arcgisonline.com/ArcGIS/services/World/Temperature/ImageServer/WCSServer?',
+				proxy : new DefaultProxy('/proxy/'),
+				coverage : 1,
+				parameters : {
+					format : 'jpeg',
+					bbox : '-158.203125,-105.46875,158.203125,105.46875',
+					width : 500,
+					height : 500,
+					crs : 'EPSG:4326'
+				}			
+			};
+			
+			
+			///////////////////////////////////////
+			////////////////////////////////////////			req wcts 1
+			var description = {
+				url :'http://sg.geodatenzentrum.de/gdz_cts?',
+				parameters:{
+					coords : '33516294 7261655',
+					fromsrs:'UTM33e',
+					tosrs :'GK2'
+				}
+			};
+
+			
+			///////////////////////////////////////
+			////////////////////////////////////////			req wcts 2
+			var description = {
+				url :'http://geoweb.hft-stuttgart.de/openwctsv2/wcts.php',
+				parameters:{
+					coords : '3500000,5400000',
+					sourcecrs:'31463',
+					targetcrs :'4326',
+					format : 'csv'
+				}
+			};
+
+
+				// a variable which is used to test The presence or the absence of certains parameters
+				// the goal is to determine which version of the service must be requested
+				var desc =JSON.stringify(description);
+
+				if(desc.indexOf('coverageid') !== -1){
+					var wcs = new wcs_2(description);
+					document.getElementById('res').innerHTML = wcs;
+				}
+				else if(desc.indexOf('identifier') !== -1){
+					var wcs = new wcs_11(description);
+					document.getElementById('res').innerHTML = wcs;
+				}
+				else if(desc.indexOf('coverage') !== -1){
+					var wcs = new wcs_10(description);
+					document.getElementById('res').innerHTML = wcs;
+				}		
+				else 
+					document.getElementById('res').innerHTML = 'The version used for the request is not treated.';				
+*/
+		
+		
+		
+		
+			/*
+			test création collection de layer elevation
+			heightmapcollection
+			heightmapterraindata à créer en 1er et à passer en param du heightmapcollection
+			
+			créer de base le provider/tuto de base bluemarble
+			insérer à un endroit les plaques de terrains pour les vsualiser
+
+			var bla = new Cesium.CesiumWidget('res');		// l'equivalent de ça pour créer le widget de fond 
+			
+			
+			*/		
+			});			
+			
+		</script>
+	</body>
+
+
+</html>
