@@ -1,7 +1,6 @@
 defineSuite([
-         'Scene/WebCoverageProcessingServiceImageryProvider_v2',
+         'Scene/WebCoverageProcessingServiceImageryProvider',
          'Core/defined',
-         'Core/jsonp',
          'Core/loadImage',
          'Core/DefaultProxy',
          'Scene/Imagery',
@@ -12,7 +11,6 @@ defineSuite([
      ], function(
          WebCoverageProcessingServiceProvider,
          defined,
-         jsonp,
          loadImage,
          DefaultProxy,
          Imagery,
@@ -32,34 +30,20 @@ defineSuite([
 	
 	it('requires url', function(){
 		var description = {			
-				coverageid : 'id'
+			query : 'for $c in (Scene) return encode( $c.red, "image/jp2")'
 		};
-		description.query = 'for $c in ('  + description.coverageid + ') return encode( $c.red, "image/jp2")';
-		
+
 		function createWithoutUrl(){
 			return new WebCoverageProcessingServiceProvider(description);		
 		}
         expect(createWithoutUrl).toThrowDeveloperError();				
 	});
 	
-	
-	it('requires identifier' , function(){
-		var description = {
-				url : 'made/up'
-		};
-		description.query = 'for $c in (Scene) return encode( $c.red, "image/jp2")';
-		
-		function createWithoutUrl(){
-			return new WebCoverageProcessingServiceProvider(description);		
-		}
-        expect(createWithoutUrl).toThrowDeveloperError();		
-	});
-	
+
 	
 	it('requires query', function(){
 		var description = {
-				url : 'made/up',
-				coverageid : 'id'
+				url : 'made/up'
 		};
 		
 		function createWithoutUrl(){
@@ -73,9 +57,8 @@ defineSuite([
 	it('contains a ? at the end of the url', function(){
 		var description = {
 			url : 'made/up?',
-			coverageid : 'id'
-		};
-		description.query = 'for $c in ('  + description.coverageid + ') return encode( $c.red, "image/jp2")';		
+			query : 'for $c in (Scene) return encode( $c.red, "image/jp2")'
+		};	
 		var provider=new WebCoverageProcessingServiceProvider(description);
 	
 		waitsFor(function(){
@@ -106,9 +89,8 @@ defineSuite([
 	it('contains an & at the end of the url', function(){
 		var description = {
 			url : 'made/up?foo=bar&',
-			coverageid : 'id'
-		};
-		description.query = 'for $c in ('  + description.coverageid + ') return encode( $c.red, "image/jp2")';		
+			query : 'for $c in (Scene) return encode( $c.red, "image/jp2")'
+		};	
 		var provider = new WebCoverageProcessingServiceProvider(description);
 		
 		waitsFor(function(){
@@ -141,10 +123,9 @@ defineSuite([
 	
 	it('contains a query at the end of the url',function(){
 		var description = {
-			url : 'made/up?foo=bar',
-			coverageid :'id'
-		};
-		description.query = 'for $c in ('  + description.coverageid + ') return encode( $c.red, "image/jp2")';		
+			url : 'made/up?foo=bar',			
+			query : 'for $c in (Scene) return encode( $c.red, "image/jp2")'
+		};	
 		var provider = new WebCoverageProcessingServiceProvider(description);
 		
 		waitsFor(function(){
@@ -178,13 +159,11 @@ defineSuite([
    it('requestImage returns a promise for an image and loads it for cross-origin use', function() {
         var description = {
             url : 'made/up',
-			coverageid : 'id'
-        };
-		description.query = 'for $c in ('  + description.coverageid + ') return encode( $c.red, "image/jp2")';		
+			query : 'for $c in (Scene) return encode( $c.red, "image/jp2")'
+        };	
 		var provider = new WebCoverageProcessingServiceProvider(description);
 
         expect(provider.url).toEqual('made/up');
-        expect(provider.id).toEqual('id');
 
         waitsFor(function() {
             return provider.ready;
@@ -218,10 +197,9 @@ defineSuite([
         var proxy = new DefaultProxy('/proxy/');
 		var description = {
             url : 'made/up',
-            coverageid : 'id',
+			query : 'for $c in (Scene) return encode( $c.red, "image/jp2")',
             proxy : proxy
-        };
-		description.query = 'for $c in ('  + description.coverageid + ') return encode( $c.red, "image/jp2")';        
+        }; 
 		var provider = new WebCoverageProcessingServiceProvider(description);
 
         waitsFor(function() {
@@ -259,9 +237,8 @@ defineSuite([
 	it('raises error event when image cannot be loaded', function() {
 		var description = {
             url : 'made/up',
-            coverageid : 'id'
-        };
-		description.query = 'for $c in ('  + description.coverageid + ') return encode( $c.red, "image/jp2")';	        
+			query : 'for $c in (Scene) return encode( $c.red, "image/jp2")'
+        };    
 		var provider = new WebCoverageProcessingServiceProvider(description);
         var layer = new ImageryLayer(provider);
 

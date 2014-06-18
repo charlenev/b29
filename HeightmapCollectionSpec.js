@@ -3,27 +3,13 @@ defineSuite([
 		'Scene/HeightmapCollection',
 		'Core/TerrainProvider',
          'Core/defined',
-         'Core/jsonp',
-         'Core/loadImage',
-         'Core/DefaultProxy',
-         'Core/Math',
-         'Scene/Imagery',
          'Scene/ImageryLayer',
-         'Scene/ImageryProvider',
-         'Scene/ImageryState',
          'ThirdParty/when'
 	], function(
 		HeightmapCollection,
 		TerrainProvider,
 		defined,
-		jsonp,
-		loadImage,
-		DefaultProxy,
-		Math,
-		Imagery,
 		ImageryLayer,
-		ImageryProvider,
-		ImageryState,
 		when) {
     "use strict";
 

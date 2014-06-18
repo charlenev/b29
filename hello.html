@@ -14,13 +14,24 @@
 		<div id="container" class="fullSize">
 		</div>
 		<div id="toolbar">
-			<div id="hiddenList"></div>
+			<table id="icon">
+				<tr id="tools">
+					<td id="hiddenList"></td>
+					<td id="modify"></td>
+				</tr>
+			</table>
 			<div id="layers">
 				<table id="terrain">
 				</table>
 				<table id="layerTable" >
 				</table>
 			</div>
+			<div id="form">	
+				<div id="selector">
+				</div>
+				<table id="formul" >
+				</table>			
+			</div>		
 		</div>
 		
 		<script type="text/javascript">
@@ -32,7 +43,7 @@
 			'./Source/Scene/WebCoverageServiceImageryProvider_v1_0',
 			'./Source/Scene/WebCoverageServiceImageryProvider_v1_1',
 			'./Source/Scene/WebCoverageServiceImageryProvider_v2',
-			'./Source/Scene/WebCoverageProcessingServiceImageryProvider_v2',
+			'./Source/Scene/WebCoverageProcessingServiceImageryProvider',
 			'./Source/Scene/WebCoordinateTransformationServiceImageryProvider_v1',	
 			'./Source/Scene/WebCoordinateTransformationServiceImageryProvider_v2',	
 			'./Source/Scene/ArcGisMapServerImageryProvider',
@@ -91,20 +102,18 @@
 					new ArcGisMapServerImageryProvider({
 						url : '//server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer'
 				}));					
-	
-
 				addAdditionalLayerOption(
 					'WorldTimeZones (wmts)',
 					new wmts( {
-						url : 'http://map1.vis.earthdata.nasa.gov/wmts-geo/wmts.cgi',
-						layer :'MODIS_Terra_CorrectedReflectance_TrueColor',
+						url : 'http://sampleserver6.arcgisonline.com/arcgis/rest/services/WorldTimeZones/MapServer/WMTS',
+						layer :'WorldTimeZones',
 						proxy : new DefaultProxy('/proxy/') ,						
 						parameters : {
 							tilerow : 0,
-							tilecol : 1,
-							tilematrix : '1',
-							format : 'image/jpeg',
-							tilematrixset : 'EPSG4326_250m'
+							tilecol : 0,
+							tilematrix : 1,
+							format : 'image/png',
+							tilematrixset : 'default028mm'
 				}}), false);
 				addAdditionalLayerOption(
 					'Temperature (wcs 1.0)',
@@ -113,10 +122,8 @@
 						coverage : 1,
 						proxy : new DefaultProxy('/proxy/') ,						
 						parameters : {
-							format : 'jpeg',
+							format : 'png',
 							bbox : '-158.203125,-105.46875,158.203125,105.46875',
-							width : 500,
-							height : 500,
 							crs : 'EPSG:4326'
 				}}), false);
 				addAdditionalLayerOption(
@@ -127,9 +134,8 @@
 						proxy : new DefaultProxy('/proxy/') ,						
 						parameters : {
 							boundingbox : '-2700000,-2700000,6700000,6700000,urn:ogc:def:crs:EPSG::32661',
-							format : 'GeoTIFF',
-							version : '1.1.0'
-					}}), false);				
+							format : 'GeoTIFF'
+					}}), false);		
 				addAdditionalLayerOption(
 					'Petascope (wcs 2.0)',
 					new wcs_2({
@@ -144,12 +150,10 @@
 					'Myocean_test (wcps)', 
 					new wcps({
 						url :	'http://earthserver.pml.ac.uk/cache/wcps_cache' ,
-						coverageid : 'myocean_test' ,
-						proxy : new DefaultProxy('/proxy/') ,						
+						//proxy : new DefaultProxy('/proxy/') ,						
 						query: 'for c in (myocean_test) return encode (slice(c, { t(10)}) ,"png")'	
 					}), false);		
 			}
-
 
 			// add a layer on the collection of base layer
 			// only one base layer can be chosen
@@ -217,6 +221,8 @@
 			setupLayers();		
 			// add some items on the interface which not need to be updated
 			addOther();
+			// create a (hidden) form to edit a web service request
+			createSelection();
 			// updates the interface according to action sof the user
 			// (raise or lower, show or mask a layer, choose another one)
 			updateUserInterface(imageryLayers, baseLayers);		
