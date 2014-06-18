@@ -98,15 +98,7 @@ define([
 		
 		// Defines width and height of the tile, if it is not defined, it takes 256
 		this._tileWidth = defaultValue(description.parameters.tileWidth, 256);								
-		this._tileHeight = defaultValue(description.parameters.tileHeight, 256);
-		// We define a value for the maximum and the minimum of level of detail
-		this._minLOD = defaultValue(description.parameters.minimumLevel, 0);			
-		this._maxLOD = defaultValue(description.parameters.maximumLevel, 18);		
-		// Tile which is treated if it is not defined in le list of parameters (top-left-corner)
-		this._tileRow = defaultValue(description.parameters.tilerow, 0);	
-		this._tileCol = defaultValue(description.parameters.tilecol, 0);
-		// We define 2 dimensions for the data
-		this._dimensions = defaultValue(description.parameters.dimensions, 2);
+		this._tileHeight = defaultValue(description.parameters.tileHeight, 256);	
 		// Defines the name of the matrix which contain the tile
 		this._tilematrix = description.parameters.tilematrix;
 		// Defines the name of the images pyramid
@@ -125,9 +117,8 @@ define([
         this._credit = credit;
 	    this._ready = true;
 		this._errorEvent = new Event();
-		
-		
-        var rectangle = defaultValue(description.rectangle, Rectangle.MAX_VALUE);
+
+      var rectangle = defaultValue(description.rectangle, Rectangle.MAX_VALUE);
         this._tilingScheme = new GeographicTilingScheme({
             rectangle : rectangle
         });
@@ -265,32 +256,6 @@ define([
 					throw new DeveloperError('tileHeight must not be called before imagery provider is ready.');				
 				return this._tileHeight;			
 			}},
-		
-		/**
-		*	Gets the maximum level-of-detail that can be requested. This function should not be called before
-		*	{@link WebMapTileServiceImageryProvider#ready} returns true.
-		*	@memberof WebMapTileServiceImageryProvider
-		*	@type {Number}
-		*/		
-		maximumLevel : {
-			get : function(){
-				if(!this._ready)
-					throw new DeveloperError('maximumLevel must not be called before imagery provider is ready.');				
-				return this._maxLOD;
-			}},
-			
-		/**
-		*	Gets the minimum level-of-detail that can be requested. This function should not be called before
-		*	{@link WebMapTileServiceImageryProvider#ready} returns true.
-		*	@memberof WebMapTileServiceImageryProvider
-		*	@type {Number}
-		*/					
-		minimumLevel : {
-			get : function(){
-				if(!this._ready)
-					throw new DeveloperError('minimumLevel must not be called before imagery provider is ready.');				
-				return this._minLOD;			
-			}},
 
 		/**
 		*	Gets the number of the tile(X axis). This function should not be called before
@@ -318,18 +283,6 @@ define([
 				return this._tileCol;
 			}},
 
-		/**
-		*	Gets the number of dimensions which are defined. This function should not be called before
-		*	{@link WebMapTileServiceImageryProvider#ready} returns true.
-		*	@memberof WebMapTileServiceImageryProvider
-		*	@type {Number}
-		*/					
-		dimensions : {
-			get : function(){
-				if(!this._ready)
-					throw new DeveloperError('dimensions must not be called before imagery provider is ready.');				
-				return this._dimensions;
-			}},
 			
 		/**
 		*	Gets the value which corresponds of the zoom level of the 'tilematrixset'.This function should not be called before
@@ -406,7 +359,7 @@ define([
 		// If some of these parameters are not defined, we fix their value
 		
 		// We test the value of the name of the layer, the tile matrix which is the level of zoom from 
-		// the TileMatrixSet, the index of the tile which is currently treated, the set of tiles, the number of dimensions we used
+		// the TileMatrixSet, the index of the tile which is currently treated, the set of tiles
 		if(!defined(parameters.layer))
 			url += 'layer=' + imageryProvider._layer + '&';
 			
@@ -420,7 +373,6 @@ define([
 	    var proxy = imageryProvider._proxy;
         if (defined(proxy)) 
             url = proxy.getURL(url);
-
 		return url;		
 	};
 	
@@ -436,7 +388,7 @@ define([
         service : 'WMTS',
         version : '1.0.0',
         request : 'GetTile',
-        style : 'default',								// default
+        style : 'default',								
         format : 'image/png'
     });	
 	
@@ -458,12 +410,12 @@ define([
 	WebMapTileServiceImageryProvider.prototype.requestImage = function() {
 		if(!this._ready)
 			throw new DeveloperError('requestImage cannot be called before the imagery provider is ready.');
-		
+
 		var url = buildImageUrl(this);
 		return ImageryProvider.loadImage(this, url);	
 		//return url ;
 	};
-	
+
 	
 	return WebMapTileServiceImageryProvider;
 });

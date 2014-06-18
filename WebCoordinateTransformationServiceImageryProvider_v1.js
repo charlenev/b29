@@ -24,12 +24,7 @@ define([
         ImageryProvider,
         GeographicTilingScheme) {
     "use strict";
-	
-//	en admettant que lors d'un requête on transforme les coordonnes
-//	et que l'on voit le résultat sur l'image.. on garde alors les mêmes propriètés que les autres services. 
-//	requestimage(), tilingscheme/rectangle ...	
-//
-//
+
 
 	/**
 	* Provides tiled imagery hosted by a Web Coordinate Transformation Service (WCTS) server.

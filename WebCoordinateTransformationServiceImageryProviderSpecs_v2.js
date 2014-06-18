@@ -1,7 +1,6 @@
 defineSuite([
          'Scene/WebCoordinateTransformationServiceImageryProvider_v2',
          'Core/defined',
-         'Core/jsonp',
          'Core/loadImage',
          'Core/DefaultProxy',
          'Scene/Imagery',
@@ -12,7 +11,6 @@ defineSuite([
      ], function(
          WebCoordinateTransformationServiceImageryProvider,
          defined,
-         jsonp,
          loadImage,
          DefaultProxy,
          Imagery,

@@ -363,7 +363,7 @@ define([
         service : 'WCS',
         version : '1.0.0',
         request : 'GetCoverage',
-        style : 'default',						
+      //  style : 'default',						
         format : 'png'
     });	
 	

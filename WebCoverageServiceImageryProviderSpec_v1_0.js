@@ -1,7 +1,6 @@
 defineSuite( [
          'Scene/WebCoverageServiceImageryProvider_v1_0',
          'Core/defined',
-         'Core/jsonp',
          'Core/loadImage',
          'Core/DefaultProxy',
          'Scene/Imagery',
@@ -12,7 +11,6 @@ defineSuite( [
      ], function(
          WebCoverageServiceProvider,
          defined,
-         jsonp,
          loadImage,
          DefaultProxy,
          Imagery,

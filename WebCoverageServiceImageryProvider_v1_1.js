@@ -299,7 +299,7 @@ define([
         service : 'WCS',
         version : '1.1.0',
         request : 'GetCoverage',
-        style : 'default',								// default		
+        //style : 'default',								// default		
         format : 'tiff'
     });
 	
